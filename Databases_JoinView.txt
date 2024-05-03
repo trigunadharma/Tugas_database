@@ -1,0 +1,253 @@
+Join Table & View
+Worksheet 4
+
+Nama	: Muhammad Hafis Gunawan Purba
+
+
+SOAL 4.1
+
+Tampilkan data berikut menggunakan join table:
+
+1.	
+Pesanan	Pelanggan	Kartu
+id	tanggal	total	kode	nama	nama kartu	diskon
+
+SELECT ...
+SELECT pesanan.id, pesanan.tanggal, pesanan. total, pelanggan.kode, pelanggan.nama, 
+kartu.nama as nama_kartu, kartu.diskon
+FROM pesanan INNER JOIN pelanggan ON pesanan.pelanggan_id = pelanggan.id
+INNER JOIN kartu ON pelanggan.kartu_id = kartu.id;
+
++----+------------+---------+------+--------------------+---------------+--------+
+| id | tanggal    | total   | kode | nama               | nama_kartu    | diskon |
++----+------------+---------+------+--------------------+---------------+--------+
+|  1 | 2015-11-04 | 9720000 | C001 | Agung Sedayu Group | Gold Utama    |   0.05 |
+|  2 | 2015-11-04 |   17500 | C003 | Sekar Mirah        | Gold Utama    |   0.05 |
+|  3 | 2015-11-04 |       0 | C006 | Gayatri Dwi        | Gold Utama    |   0.05 |
+|  4 | 2015-11-04 |       0 | C007 | Dewi Gyat          | Gold Utama    |   0.05 |
+|  5 | 2015-11-04 |       0 | C010 | Cassanndra         | Gold Utama    |   0.05 |
+|  6 | 2015-11-04 |       0 | C002 | Pandan Wangi       | Platinum Jaya |    0.1 |
+|  7 | 2015-11-04 |       0 | C005 | Pradabashu         | Platinum Jaya |    0.1 |
+|  8 | 2015-11-04 |       0 | C004 | Swandaru Geni      | Non Member    |      0 |
+|  9 | 2015-11-04 |       0 | C008 | Andre Haru         | Non Member    |      0 |
+| 10 | 2015-11-04 |       0 | C009 | Ahmad Hasan        | Non Member    |      0 |
+| 11 | 2015-11-04 |   30000 | C009 | Ahmad Hasan        | Non Member    |      0 |
++----+------------+---------+------+--------------------+---------------+--------+
+11 rows in set (0.262 sec)
+
+
+2.	
+Pembelian	Produk	Vendor
+id	tanggal	nomor	jumlah	harga	nama	nama	kontak
+	
+	SELECT pembelian.id, pembelian.tanggal, pembelian.nomor, pembelian.jumlah, pembelian.harga,
+produk.nama, vendor.nama, vendor.kontak FROM pembelian INNER JOIN produk 
+ON pembelian.produk_id = produk.id 
+INNER JOIN vendor ON pembelian.vendor_id = vendor.id;
+
++----+------------+-------+--------+---------+-------------------+----------------------+-----------------+
+| id | tanggal    | nomor | jumlah | harga   | nama              | nama                 | kontak          |
++----+------------+-------+--------+---------+-------------------+----------------------+-----------------+
+|  1 | 2019-10-10 | P001  |      2 | 3500000 | Televisi 21 inchs | PT Guna Samudra      | Ali Nurdin      |
+|  2 | 2019-11-20 | P002  |      5 | 5500000 | Televisi 40 inch  | PT Pondok C9         | Putri Ramadhani |
+|  3 | 2019-12-12 | P003  |      5 | 5400000 | Televisi 40 inch  | PT Guna Samudra      | Ali Nurdin      |
+|  4 | 2020-01-20 | P004  |    200 |    1800 | Teh Botol         | CV Jaya Raya Semesta | Dwi Rahayu      |
+|  5 | 2020-01-20 | P005  |    100 |    2300 | Teh Kotak         | CV Jaya Raya Semesta | Dwi Rahayu      |
++----+------------+-------+--------+---------+-------------------+----------------------+-----------------+
+5 rows in set (0.030 sec)
+
+3.MariaDB [dbpost_sib6]> SELECT pesanan.id , pesanan.tanggal, pesanan.total, pelanggan.nama, produk.kode, produk.nama, jenis_produk.nama, pesanan_items.qty, pesanan_items.harga AS harga_jual
+    -> FROM pesanan INNER JOIN pelanggan ON pesanan.pelanggan_id = pelanggan.id
+    -> INNER JOIN pesanan_items ON pesanan.id = pesanan_items.pesanan_id
+    -> INNER JOIN produk ON pesanan_items.produk_id = produk.id
+    -> INNER JOIN jenis_produk ON produk.jenis_produk_id = jenis_produk.id;
++----+------------+---------+--------------------+------+-------------------+-------------+------+------------+
+| id | tanggal    | total   | nama               | kode | nama              | nama        | qty  | harga_jual |
++----+------------+---------+--------------------+------+-------------------+-------------+------+------------+
+|  1 | 2015-11-04 | 9720000 | Agung Sedayu Group | TV01 | Televisi 21 inchs | elektroniks |    1 |    5040000 |
+|  1 | 2015-11-04 | 9720000 | Agung Sedayu Group | K001 | Kulkas 2 pintu    | elektroniks |    1 |    4680000 |
+|  2 | 2015-11-04 |   17500 | Sekar Mirah        | TK01 | Teh Kotak         | minuman     |    5 |       3500 |
+|  3 | 2015-11-04 |       0 | Gayatri Dwi        | TK01 | Teh Kotak         | minuman     |   10 |       3500 |
+|  3 | 2015-11-04 |       0 | Gayatri Dwi        | TV01 | Televisi 21 inchs | elektroniks |    1 |    5040000 |
+|  5 | 2015-11-04 |       0 | Cassanndra         | TK01 | Teh Kotak         | minuman     |   10 |       3500 |
+|  6 | 2015-11-04 |       0 | Pandan Wangi       | TK01 | Teh Kotak         | minuman     |   20 |       3500 |
++----+------------+---------+--------------------+------+-------------------+-------------+------+------------+
+7 rows in set (0.275 sec)
+
+
+
+
+SOAL 4.2
+
+Buatlah view berdasarkan query yang menampilkan data berikut ini:
+
+1.	
+Pesanan	Pelanggan	Kartu
+id	tanggal	total	kode	nama	nama kartu	diskon
+
+CREATE VIEW ...
+
+CREATE VIEW pesanan_pelanggan_kartu
+AS SELECT pesanan.id, pesanan.tanggal, pesanan. total, pelanggan.kode, pelanggan.nama, 
+kartu.nama as nama_kartu, kartu.diskon
+FROM pesanan INNER JOIN pelanggan ON pesanan.pelanggan_id = pelanggan.id
+INNER JOIN kartu ON pelanggan.kartu_id = kartu.id;
+
++----+------------+---------+------+--------------------+---------------+--------+
+| id | tanggal    | total   | kode | nama               | nama_kartu    | diskon |
++----+------------+---------+------+--------------------+---------------+--------+
+|  1 | 2015-11-04 | 9720000 | C001 | Agung Sedayu Group | Gold Utama    |   0.05 |
+|  2 | 2015-11-04 |   17500 | C003 | Sekar Mirah        | Gold Utama    |   0.05 |
+|  3 | 2015-11-04 |       0 | C006 | Gayatri Dwi        | Gold Utama    |   0.05 |
+|  4 | 2015-11-04 |       0 | C007 | Dewi Gyat          | Gold Utama    |   0.05 |
+|  5 | 2015-11-04 |       0 | C010 | Cassanndra         | Gold Utama    |   0.05 |
+|  6 | 2015-11-04 |       0 | C002 | Pandan Wangi       | Platinum Jaya |    0.1 |
+|  7 | 2015-11-04 |       0 | C005 | Pradabashu         | Platinum Jaya |    0.1 |
+|  8 | 2015-11-04 |       0 | C004 | Swandaru Geni      | Non Member    |      0 |
+|  9 | 2015-11-04 |       0 | C008 | Andre Haru         | Non Member    |      0 |
+| 10 | 2015-11-04 |       0 | C009 | Ahmad Hasan        | Non Member    |      0 |
+| 11 | 2015-11-04 |   30000 | C009 | Ahmad Hasan        | Non Member    |      0 |
++----+------------+---------+------+--------------------+---------------+--------+
+11 rows in set (0.001 sec)
+
+2.	
+Pembelian	Produk	Vendor
+id	tanggal	nomor	jumlah	harga	nama	nama	Kontak
+	SELECT * FROM vendor;
+CREATE VIEW pembelian_produk_vendor 
+AS SELECT p.id, p.tanggal, p.nomor, p.jumlah, p.harga,
+pr.nama, v.nama as nama_vendor, v.kontak FROM pembelian p INNER JOIN produk pr
+ON p.produk_id = pr.id 
+INNER JOIN vendor v ON p.vendor_id = v.id;
+SELECT * FROM pembelian_produk_vendor;
+
++----+------------+-------+--------+---------+-------------------+----------------------+-----------------+
+| id | tanggal    | nomor | jumlah | harga   | nama              | nama_vendor          | kontak          |
++----+------------+-------+--------+---------+-------------------+----------------------+-----------------+
+|  1 | 2019-10-10 | P001  |      2 | 3500000 | Televisi 21 inchs | PT Guna Samudra      | Ali Nurdin      |
+|  2 | 2019-11-20 | P002  |      5 | 5500000 | Televisi 40 inch  | PT Pondok C9         | Putri Ramadhani |
+|  3 | 2019-12-12 | P003  |      5 | 5400000 | Televisi 40 inch  | PT Guna Samudra      | Ali Nurdin      |
+|  4 | 2020-01-20 | P004  |    200 |    1800 | Teh Botol         | CV Jaya Raya Semesta | Dwi Rahayu      |
+|  5 | 2020-01-20 | P005  |    100 |    2300 | Teh Kotak         | CV Jaya Raya Semesta | Dwi Rahayu      |
++----+------------+-------+--------+---------+-------------------+----------------------+-----------------+
+5 rows in set (0.001 sec)
+
+
+3.
+MariaDB [dbpost_sib6]> CREATE VIEW pesanan_pelanggan_produk_jenis_produk_pesanan_items AS
+    -> SELECT pesanan.id AS id,
+    ->        pesanan.tanggal AS tanggal,
+    ->        pesanan.total AS total,
+    ->        pelanggan.nama AS nama_pelanggan,
+    ->        produk.kode AS kode_produk,
+    ->        produk.nama AS nama_produk,
+    ->        jenis_produk.nama AS nama_jenis_produk,
+    ->        pesanan_items.qty AS qty,
+    ->        pesanan_items.harga AS harga_jual
+    -> FROM pesanan
+    -> INNER JOIN pelanggan ON pesanan.pelanggan_id = pelanggan.id
+    -> INNER JOIN pesanan_items ON pesanan.id = pesanan_items.pesanan_id
+    -> INNER JOIN produk ON pesanan_items.produk_id = produk.id
+    -> INNER JOIN jenis_produk ON produk.jenis_produk_id = jenis_produk.id;
+Query OK, 0 rows affected (0.011 sec)
+
+MariaDB [dbpost_sib6]> SELECT * FROM `pesanan_pelanggan_produk_jenis_produk_pesanan_items`
+    -> ;
++----+------------+---------+--------------------+-------------+-------------------+-------------------+------+------------+
+| id | tanggal    | total   | nama_pelanggan     | kode_produk | nama_produk       | nama_jenis_produk | qty  | harga_jual |
++----+------------+---------+--------------------+-------------+-------------------+-------------------+------+------------+
+|  1 | 2015-11-04 | 9720000 | Agung Sedayu Group | TV01        | Televisi 21 inchs | elektroniks       |    1 |    5040000 |
+|  1 | 2015-11-04 | 9720000 | Agung Sedayu Group | K001        | Kulkas 2 pintu    | elektroniks       |    1 |    4680000 |
+|  2 | 2015-11-04 |   17500 | Sekar Mirah        | TK01        | Teh Kotak         | minuman           |    5 |       3500 |
+|  3 | 2015-11-04 |       0 | Gayatri Dwi        | TK01        | Teh Kotak         | minuman           |   10 |       3500 |
+|  3 | 2015-11-04 |       0 | Gayatri Dwi        | TV01        | Televisi 21 inchs | elektroniks       |    1 |    5040000 |
+|  5 | 2015-11-04 |       0 | Cassanndra         | TK01        | Teh Kotak         | minuman           |   10 |       3500 |
+|  6 | 2015-11-04 |       0 | Pandan Wangi       | TK01        | Teh Kotak         | minuman           |   20 |       3500 |
++----+------------+---------+--------------------+-------------+-------------------+-------------------+------+------------+
+7 rows in set (0.001 sec)
+
+Soal 4.3 Transaction
+1.	Buatlah sebuah transaction dengan skenario-skenario statement sebagai berikut:
+●	Mulai transaction
+MariaDB [dbpost_sib6]> START TRANSACTION;
+
+●	Insert data produk sebanyak 3 record
+MariaDB [dbpost_sib6]> INSERT INTO produk (kode, nama, stok, harga_jual, jenis_produk_id)
+    -> VALUES
+    -> ('P001', 'Produk A', 100, 20000, 1),
+    -> ('P002', 'Produk B', 50, 30000, 2),
+    -> ('P003', 'Produk C', 80, 25000, 3);
+Query OK, 3 rows affected, 2 warnings (0.002 sec)
+
+●	Update data stok salah satu produk
+MariaDB [dbpost_sib6]> UPDATE produk
+    -> SET stok = 120
+    -> WHERE kode = 'P001';
+Query OK, 1 row affected (0.000 sec)
+
+●	Buat savepoint
+MariaDB [dbpost_sib6]> SAVEPOINT sp1;
+Query OK, 0 rows affected (0.001 sec)
+
+●	Hapus salah satu data pembayaran
+MariaDB [dbpost_sib6]> DELETE FROM pembayaran
+    -> WHERE id = 1;
+Query OK, 1 row affected (0.001 sec)
+
+MariaDB [dbpost_sib6]> SELECT * FROM `pembayaran`;
++----+------------+------------+--------+------+------------+-------------------+
+| id | nokuitansi | tanggal    | jumlah | ke   | pesanan_id | status_pembayaran |
++----+------------+------------+--------+------+------------+-------------------+
+|  2 | MD002      | 2023-10-10 |  30000 |    2 |         11 | Lunas             |
+|  3 | MD003      | 2023-10-10 |  30000 |    1 |         11 | Lunas             |
+|  4 | MD004      | 2023-10-10 |  15000 |    1 |          2 |                   |
+|  5 | MD005      | 2023-10-10 |  18000 |    2 |          2 | Lunas             |
++----+------------+------------+--------+------+------------+-------------------+
+4 rows in set (0.000 sec)
+
+●	Kembali ke savepoint
+MariaDB [dbpost_sib6]> ROLLBACK TO SAVEPOINT sp1;
+Query OK, 0 rows affected (0.000 sec)
+
+MariaDB [dbpost_sib6]> SELECT * FROM `pembayaran`;
++----+------------+------------+--------+------+------------+-------------------+
+| id | nokuitansi | tanggal    | jumlah | ke   | pesanan_id | status_pembayaran |
++----+------------+------------+--------+------+------------+-------------------+
+|  1 | MD001      | 0000-00-00 |  30000 |    1 |         11 | Lunas             |
+|  2 | MD002      | 2023-10-10 |  30000 |    2 |         11 | Lunas             |
+|  3 | MD003      | 2023-10-10 |  30000 |    1 |         11 | Lunas             |
+|  4 | MD004      | 2023-10-10 |  15000 |    1 |          2 |                   |
+|  5 | MD005      | 2023-10-10 |  18000 |    2 |          2 | Lunas             |
++----+------------+------------+--------+------+------------+-------------------+
+5 rows in set (0.000 sec)
+●	Update data iuran salah satu kartu
+MariaDB [dbpost_sib6]> UPDATE kartu
+    -> SET iuran = 50000
+    -> WHERE id = 1;
+Query OK, 1 row affected (0.000 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+MariaDB [dbpost_sib6]> SELECT * FROM `kartu`;
++----+------+---------------+--------+--------+
+| id | kode | nama          | diskon | iuran  |
++----+------+---------------+--------+--------+
+|  1 | GOLD | Gold Utama    |   0.05 |  50000 |
+|  2 | PLAT | Platinum Jaya |    0.1 | 150000 |
+|  3 | SLV  | Silver        |  0.025 |  50000 |
+|  4 | NO   | Non Member    |      0 |      0 |
+|  7 | PGU  | Perunggu      |    0.5 |   2000 |
++----+------+---------------+--------+--------+
+5 rows in set (0.000 sec)
+
+●	Akhiri transaction dengan commit
+
+MariaDB [dbpost_sib6]> COMMIT;
+Query OK, 0 rows affected (0.009 sec)
+
+
+2.	Berikan penjelasan kapan saat yang tepat menggunakan LOCK TABLES READ
+LOCK TABLES READ digunakan dalam SQL untuk mengunci tabel-tabel tertentu hanya untuk operasi pembacaan (READ) oleh transaksi atau sesi yang sedang berjalan. Ketika sebuah tabel dikunci dengan LOCK TABLES READ, transaksi yang melakukan operasi pembacaan dapat membaca data dari tabel yang dikunci, tetapi tidak dapat mengubah data dalam tabel tersebut. Tabel yang dikunci untuk pembacaan oleh transaksi ini juga tidak dapat diubah oleh transaksi lain hingga kunci dilepaskan.
+
+3.	Berikan penjelasan kapan saat yang tepat menggunakan LOCK TABLES WRITE
+
+LOCK TABLES WRITE digunakan dalam SQL untuk mengunci tabel-tabel tertentu untuk operasi penulisan (WRITE) oleh transaksi atau sesi yang sedang berjalan. Ketika sebuah tabel dikunci dengan LOCK TABLES WRITE, transaksi yang melakukan operasi penulisan memiliki akses eksklusif untuk mengubah data dalam tabel tersebut, tetapi tidak ada transaksi lain yang dapat membaca atau menulis ke tabel yang dikunci hingga kunci dilepaskan.
