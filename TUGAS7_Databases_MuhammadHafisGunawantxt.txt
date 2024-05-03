@@ -1,0 +1,236 @@
+Worksheet-6 | Stored Procedures, Stored Functions dan Triggers
+
+Stored Procedures, Stored Functions dan Trigger
+Worksheet 6
+
+Nama	: Muhammad Hafis Gunawan Purba
+
+<=== SOAL 6.1 ===>
+
+
+1.) MariaDB [dbpost_sib6]> DELIMITER $$
+MariaDB [dbpost_sib6]> CREATE PROCEDURE pro_naikan_harga(
+    -> IN jenis_produk INT,
+    -> IN persentasi_kenaikan INT)
+    -> BEGIN
+    -> UPDATE produk SET harga_jual = harga_jual + (harga_jual *
+    -> persentasi_kenaikan /100)
+    -> WHERE jenis_produk_id = jenis_produk;
+    -> END $$
+Query OK, 0 rows affected (0.012 sec)
+
+MariaDB [dbpost_sib6]> SELECT nama, harga_jual, jenis_produk_id FROM produk;
++-------------------+------------+-----------------+
+| nama              | harga_jual | jenis_produk_id |
++-------------------+------------+-----------------+
+| Televisi 21 inchs |   50500000 |               1 |
+| Televisi 40 inch  |    7440000 |               1 |
+| Kulkas 2 pintu    |    4680000 |               1 |
+| Meja Makan        |     600000 |               2 |
+| Teh Kotak         |       3850 |               4 |
+| PC Desktop HP     |    9984000 |               5 |
+| Teh Botol         |       2750 |               4 |
+| Notebook Acer S   |   11232000 |               5 |
+| Notebook Lenovo   |   12480000 |               5 |
+| Laptop Lenovo     |   16000000 |               1 |
+| Kopi              |      33000 |               4 |
+| Teh Sosro 2       |      15000 |               1 |
+| Laptop Asus       |    5000000 |               1 |
+| Televisi 22 inc`  |   50500000 |               1 |
+| Televisi 23 inc   |   50500000 |               1 |
+| Televisi 24 inc   |   50500000 |               1 |
+| Televisi 25 inc   |   50500000 |               1 |
+| Televisi 27 inc   |   50500000 |               1 |
+| Televisi 28 inc   |   50500000 |               1 |
+| Televisi 29 inc   |   50500000 |               1 |
+| Teh Pucuk         |       5500 |               4 |
+| Teh Pucuk2        |       5500 |               4 |
+| Produk A          |      30000 |               1 |
+| Produk B          |      40000 |               2 |
+| Produk C          |      25000 |               3 |
++-------------------+------------+-----------------+
+25 rows in set (0.000 sec)
+
+2.) MariaDB [dbpost_sib6]> DELIMITER $$
+MariaDB [dbpost_sib6]> CREATE FUNCTION umur1(tgl_lahir DATE)
+    -> RETURNS INT
+    -> BEGIN
+    -> DECLARE umur INT;
+    -> SET umur = YEAR(CURDATE()) - YEAR(tgl_lahir);
+    -> RETURN umur;
+    -> END $$
+Query OK, 0 rows affected (0.034 sec)
+
+MariaDB [dbpost_sib6]> DELIMITER ;
+MariaDB [dbpost_sib6]> SELECT nama, umur1(tgl_lahir) AS umur FROM pelanggan;
++--------------------+------+
+| nama               | umur |
++--------------------+------+
+| Agung Sedayu Group |   14 |
+| Pandan Wangi       |   74 |
+| Sekar Mirah        |   41 |
+| Swandaru Geni      |   43 |
+| Pradabashu         |   39 |
+| Gayatri Dwi        |   37 |
+| Dewi Gyat          |   36 |
+| Andre Haru         |   34 |
+| Ahmad Hasan        |   32 |
+| Cassanndra         |   34 |
+| Andi Wijaya        |    1 |
+| Ira                |    1 |
++--------------------+------+
+
+3.) MariaDB [dbpost_sib6]> DELIMITER $$
+MariaDB [dbpost_sib6]> CREATE FUNCTION ktgri_harga(price DOUBLE)
+    -> RETURNS VARCHAR(20)
+    -> BEGIN
+    ->     DECLARE category VARCHAR(20);
+    ->
+    ->     IF price <= 500000 THEN
+    ->         SET category = 'murah';
+    ->     ELSEIF price <= 3000000 THEN
+    ->         SET category = 'sedang';
+    ->     ELSEIF price <= 10000000 THEN
+    ->         SET category = 'mahal';
+    ->     ELSE
+    ->         SET category = 'sangat mahal';
+    ->     END IF;
+    ->
+    ->     RETURN category;
+    -> END $$
+Query OK, 0 rows affected (0.032 sec)
+
+MariaDB [dbpost_sib6]> DELIMITER ;
+MariaDB [dbpost_sib6]> SELECT kategori_harga(200000);
++------------------------+
+| kategori_harga(200000) |
++------------------------+
+| murah                  |
++------------------------+
+1 row in set (0.001 sec)
+
+
+
+<=== SOAL 6.2 ===>
+
+1.) MariaDB [dbpost_sib6]> DELIMITER $$
+MariaDB [dbpost_sib6]> CREATE TRIGGER check_pembayaran BEFORE INSERT ON
+    ->     pembayaran
+    ->     FOR EACH ROW
+    ->     BEGIN
+    ->     DECLARE total_bayar DECIMAL (10,2);
+    ->     DECLARE total_pesanan DECIMAL (10.2);
+    ->     SELECT SUM(jumlah) INTO total_bayar FROM pembayaran WHERE
+    ->     pesanan_id = NEW.pesanan_id;
+    ->     SELECT total INTO total_pesanan FROM pesanan WHERE
+    ->     id = new.pesanan_id;
+    ->     IF total_bayar + NEW.jumlah >= total_pesanan THEN
+    ->     SET NEW.status_pembayaran = 'LUNAS' ;
+    ->     END IF;
+    ->     END $$
+Query OK, 0 rows affected (0.035 sec)
+
+MariaDB [dbpost_sib6]> DELIMITER ;
+MariaDB [dbpost_sib6]>  INSERT INTO pembayaran (nokuitansi, tanggal, jumlah, ke, pesanan_id, status_pembayaran)
+    -> VALUES ('KWI001', '2023-03-03', 200000, 1, 1, 'BelumLunas');
+Query OK, 1 row affected (0.036 sec)
+
+MariaDB [dbpost_sib6]> SELECT * FROM pembayaran;
++----+------------+------------+--------+------+------------+-------------------+
+| id | nokuitansi | tanggal    | jumlah | ke   | pesanan_id | status_pembayaran |
++----+------------+------------+--------+------+------------+-------------------+
+|  1 | MD001      | 0000-00-00 |  30000 |    1 |         11 | Lunas             |
+|  2 | MD002      | 2023-10-10 |  30000 |    2 |         11 | Lunas             |
+|  3 | MD003      | 2023-10-10 |  30000 |    1 |         11 | Lunas             |
+|  4 | MD004      | 2023-10-10 |  15000 |    1 |          2 |                   |
+|  5 | MD005      | 2023-10-10 |  18000 |    2 |          2 | Lunas             |
+|  6 | KWI001     | 2023-03-03 | 200000 |    1 |          1 | BelumLunas        |
++----+------------+------------+--------+------+------------+-------------------+
+6 rows in set (0.001 sec)
+
+2.) MariaDB [dbpost_sib6]> CREATE PROCEDURE kurangi_stok(IN produk_id INT,
+    ->     IN jumlah_pesanan INT)
+    ->     BEGIN
+    ->     DECLARE stok_produk INT;
+    ->     SELECT stok INTO stok_produk FROM produk WHERE id = produk_id;
+    ->     SET stok_produk = stok_produk - jumlah_pesanan;
+    ->     IF stok_produk < 0 THEN
+    ->     SIGNAL SQLSTATE '45000'
+    ->     SET MESSAGE_TEXT = 'Stok produk tidak cukup' ;
+    ->     END IF;
+    ->     UPDATE produk SET stok = stok_produk WHERE id = produk_id;
+    ->     END $$
+Query OK, 0 rows affected (0.034 sec)
+
+MariaDB [dbpost_sib6]> DELIMITER ;
+MariaDB [dbpost_sib6]> DELIMITER $$
+MariaDB [dbpost_sib6]> CREATE TRIGGER kurangi_stok AFTER INSERT
+    -> ON pesanan_items
+    -> FOR EACH ROW
+    -> BEGIN
+    -> CALL kurangi_stok(NEW.produk_id, NEW.qty);
+    -> END $$
+Query OK, 0 rows affected (0.011 sec)
+
+MariaDB [dbpost_sib6]> DELIMITER ;
+
+MariaDB [dbpost_sib6]> SELECT id, nama, stok FROM produk;
++----+-------------------+------+
+| id | nama              | stok |
++----+-------------------+------+
+|  1 | Televisi 21 inchs |    5 |
+|  2 | Televisi 40 inch  |    4 |
+|  3 | Kulkas 2 pintu    |    6 |
+|  4 | Meja Makan        |    4 |
+|  5 | Teh Kotak         |    6 |
+|  6 | PC Desktop HP     |    9 |
+|  7 | Teh Botol         |   53 |
+|  8 | Notebook Acer S   |    7 |
+|  9 | Notebook Lenovo   |    9 |
+| 11 | Laptop Lenovo     |    5 |
+| 15 | Kopi              |   10 |
+| 16 | Teh Sosro 2       |    5 |
+| 18 | Laptop Asus       |   10 |
+| 19 | Televisi 22 inc`  |    5 |
+| 20 | Televisi 23 inc   |    5 |
+| 21 | Televisi 24 inc   |    5 |
+| 22 | Televisi 25 inc   |    5 |
+| 24 | Televisi 27 inc   |    5 |
+| 25 | Televisi 28 inc   |    5 |
+| 26 | Televisi 29 inc   |    5 |
+| 27 | Teh Pucuk         |   10 |
+| 28 | Teh Pucuk2        |   10 |
+| 29 | Produk A          |  120 |
+| 30 | Produk B          |   50 |
+| 31 | Produk C          |   80 |
++----+-------------------+------+
+25 rows in set (0.001 sec)
+
+
+3.) MariaDB [dbpost_sib6]> DELIMITER $$
+MariaDB [dbpost_sib6]> CREATE TRIGGER trig_kurangi_stok AFTER INSERT ON pesanan_items
+    -> FOR EACH ROW
+    -> BEGIN
+    ->   -- Memanggil stored procedure kurangi_stok untuk mengurangi stok produk
+    ->   CALL kurangi_stok(NEW.produk_id, NEW.qty);
+    -> END $$
+Query OK, 0 rows affected (0.011 sec)
+
+MariaDB [dbpost_sib6]> DELIMITER ;
+MariaDB [dbpost_sib6]> INSERT INTO pesanan_items (produk_id, pesanan_id, qty, harga) VALUES (7, 3, 2, 7000);
+Query OK, 1 row affected (0.035 sec)
+MariaDB [dbpost_sib6]> select produk_id,pesanan_id,qty,harga from pesanan_items;
++-----------+------------+------+---------+
+| produk_id | pesanan_id | qty  | harga   |
++-----------+------------+------+---------+
+|         1 |          1 |    1 | 5040000 |
+|         3 |          1 |    1 | 4680000 |
+|         5 |          2 |    5 |    3500 |
+|         5 |          3 |   10 |    3500 |
+|         1 |          3 |    1 | 5040000 |
+|         5 |          5 |   10 |    3500 |
+|         5 |          6 |   20 |    3500 |
+|        16 |          1 |    5 |    4000 |
+|         7 |          3 |    2 |    7000 |
++-----------+------------+------+---------+
+9 rows in set (0.001 sec)
